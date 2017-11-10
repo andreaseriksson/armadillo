@@ -38,6 +38,8 @@ defmodule ArmadilloWeb.Endpoint do
     key: "_armadillo_key",
     signing_salt: "LijeqA03"
 
+  plug CORSPlug
+
   plug ArmadilloWeb.Router
 
   @doc """

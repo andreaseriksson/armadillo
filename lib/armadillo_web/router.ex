@@ -11,6 +11,8 @@ defmodule ArmadilloWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.LoadResource
   end
 
   scope "/", ArmadilloWeb do
@@ -20,7 +22,15 @@ defmodule ArmadilloWeb.Router do
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", ArmadilloWeb do
-  #   pipe_through :api
-  # end
+  scope "/api", ArmadilloWeb do
+    pipe_through :api
+
+    post "/signup", UserController, :create
+    get "/profile", UserController, :show
+    put "/profile", UserController, :update
+    delete "/delete_profile", UserController, :delete
+
+    post "/signin", SessionController, :create
+    resources "/secrets", SecretController, except: [:new, :edit]
+  end
 end
