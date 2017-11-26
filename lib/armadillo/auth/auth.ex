@@ -74,7 +74,7 @@ defmodule Armadillo.Auth do
       ** (Ecto.NoResultsError)
 
   """
-  def get_secret!(user, id), do: Repo.get_by!(Secret, id: id, user_id: user.id)
+  def get_secret!(user, uuid), do: Repo.get_by!(Secret, uuid: uuid, user_id: user.id)
 
   @doc """
   Creates a secret.

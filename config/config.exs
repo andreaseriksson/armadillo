@@ -26,7 +26,7 @@ config :guardian, Guardian,
   issuer: "Armadillo",
   ttl: { 3, :days },
   verify_issuer: true,
-  secret_key: System.get_env("GUARDIAN_SECRET_KEY"),
+  secret_key: System.get_env("GUARDIAN_SECRET_KEY") || "LMtzATM31U1NB4ML2O2493EyMvjicIjcao0/C5JZgo6fvOGlRsse5HclZn2IYWae",
   serializer: Armadillo.GuardianSerializer
 
 config :cipher,

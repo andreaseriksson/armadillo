@@ -1,0 +1,13 @@
+@import "bootstrap";
+
+body {
+  padding-top: 80px;
+  color: #5a5a5a;
+}
+
+@media (max-width: 575px) {
+  .hide-phone {
+    display: none;
+  }
+}
+

@@ -8,6 +8,7 @@ defmodule Armadillo.Auth.Secret do
     field :description, :string
     field :name, :string
     field :url, :string
+    field :uuid, :string
     field :password, Armadillo.Auth.EncryptedField
     field :username, Armadillo.Auth.EncryptedField
     belongs_to :user, Armadillo.Auth.User
@@ -18,7 +19,7 @@ defmodule Armadillo.Auth.Secret do
   @doc false
   def changeset(%Secret{} = secret, attrs) do
     secret
-    |> cast(attrs, [:name, :username, :password, :url, :description])
+    |> cast(attrs, [:name, :username, :password, :url, :description, :uuid])
     |> validate_required([:name])
   end
 end

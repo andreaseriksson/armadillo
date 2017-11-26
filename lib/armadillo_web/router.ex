@@ -15,12 +15,6 @@ defmodule ArmadilloWeb.Router do
     plug Guardian.Plug.LoadResource
   end
 
-  scope "/", ArmadilloWeb do
-    pipe_through :browser # Use the default browser stack
-
-    get "/", PageController, :index
-  end
-
   # Other scopes may use custom stacks.
   scope "/api", ArmadilloWeb do
     pipe_through :api
@@ -32,5 +26,12 @@ defmodule ArmadilloWeb.Router do
 
     post "/signin", SessionController, :create
     resources "/secrets", SecretController, except: [:new, :edit]
+  end
+
+  scope "/", ArmadilloWeb do
+    pipe_through :browser # Use the default browser stack
+
+    get "/", PageController, :index
+    get "/*path", PageController, :index
   end
 end

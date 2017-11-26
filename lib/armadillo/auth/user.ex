@@ -6,6 +6,7 @@ defmodule Armadillo.Auth.User do
 
   schema "users" do
     field :crypto_token, :string
+    field :channel_name, :string
     field :email, :string
     field :password, :string, virtual: true
     field :password_confirmation, :string, virtual: true
@@ -37,6 +38,7 @@ defmodule Armadillo.Auth.User do
     |> validate_confirmation(:password)
     |> put_pass_hash()
     |> set_token()
+    |> set_channel_name()
   end
 
   @doc false
@@ -55,6 +57,15 @@ defmodule Armadillo.Auth.User do
       set_token(changeset)
     else
       put_change(changeset, :crypto_token, token)
+    end
+  end
+
+  defp set_channel_name(changeset) do
+    name = "channel-#{create_token(10)}"
+    if Armadillo.Repo.get_by(User, %{channel_name: name}) do
+      set_channel_name(changeset)
+    else
+      put_change(changeset, :channel_name, name)
     end
   end
 

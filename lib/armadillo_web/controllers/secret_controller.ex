@@ -23,21 +23,21 @@ defmodule ArmadilloWeb.SecretController do
     end
   end
 
-  def show(conn, %{"id" => id}) do
-    secret = Auth.get_secret!(current_user(conn), id)
+  def show(conn, %{"id" => uuid}) do
+    secret = Auth.get_secret!(current_user(conn), uuid)
     render(conn, "show.json", secret: secret)
   end
 
-  def update(conn, %{"id" => id, "secret" => secret_params}) do
-    secret = Auth.get_secret!(current_user(conn), id)
+  def update(conn, %{"id" => uuid, "secret" => secret_params}) do
+    secret = Auth.get_secret!(current_user(conn), uuid)
 
     with {:ok, %Secret{} = secret} <- Auth.update_secret(secret, secret_params) do
       render(conn, "show.json", secret: secret)
     end
   end
 
-  def delete(conn, %{"id" => id}) do
-    secret = Auth.get_secret!(current_user(conn), id)
+  def delete(conn, %{"id" => uuid}) do
+    secret = Auth.get_secret!(current_user(conn), uuid)
     with {:ok, %Secret{}} <- Auth.delete_secret(secret) do
       send_resp(conn, :no_content, "")
     end

@@ -12,9 +12,11 @@ defmodule ArmadilloWeb.UserController do
 
   def create(conn, %{"user" => user_params}) do
     with {:ok, %User{} = user} <- Auth.create_user(user_params) do
+      {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
+
       conn
       |> put_status(:created)
-      |> render("show.json", user: user)
+      |> render("create.json", user: user, jwt: jwt)
     end
   end
 

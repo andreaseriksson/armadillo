@@ -1,0 +1,4 @@
+export const RECEIVE_SECRETS = 'RECEIVE_SECRETS'
+export const SAVE_SECRET = 'SAVE_SECRET'
+export const UPDATE_SECRET = 'UPDATE_SECRET'
+export const DELETE_SECRET = 'DELETE_SECRET'

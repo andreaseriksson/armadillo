@@ -11,11 +11,14 @@ defmodule ArmadilloWeb.SecretView do
   end
 
   def render("secret.json", %{secret: secret}) do
-    %{id: secret.id,
+    %{
+      id: secret.id,
       name: secret.name,
       username: secret.username,
       password: secret.password,
       url: secret.url,
-      description: secret.description}
+      description: secret.description,
+      uuid: secret.uuid
+    }
   end
 end
