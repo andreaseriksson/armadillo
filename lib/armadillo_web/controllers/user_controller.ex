@@ -10,9 +10,10 @@ defmodule ArmadilloWeb.UserController do
 
   action_fallback ArmadilloWeb.FallbackController
 
-  def create(conn, %{"user" => user_params}) do
+  def create(conn, %{"user" => user_params, "device_uuid" => device_uuid}) do
     with {:ok, %User{} = user} <- Auth.create_user(user_params) do
       {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
+      Auth.register_device(user, %{uuid: device_uuid, approved: true})
 
       conn
       |> put_status(:created)

@@ -13,20 +13,24 @@ import {
   addEvent
 } from './database'
 
-import {readJsonWebToken} from '../../reducer'
+import {
+  readJsonWebToken,
+  readChannelName
+} from '../../reducer'
 
 import uuid from 'uuid/v4'
 
 var channel
 
 export const connectToChannel = (socket, dispatch) => {
-  channel = socket.channel('secrets', { guardian_token: readJsonWebToken() })
+  channel = socket.channel(`secrets:${readChannelName()}`, { guardian_token: readJsonWebToken() })
 
   channel.join()
     .receive('ok', () => { loadAndSyncSecrets(channel) })
     .receive('error', response => { console.log('Unable to join', response) })
 
   channel.on('sync:end', data => {
+    // allEvents.delete()
     console.log(data)
       // dispatch({
       //   type: REFRESH_TOKEN_SUCCESS,

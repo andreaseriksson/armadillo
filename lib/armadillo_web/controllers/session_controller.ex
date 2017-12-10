@@ -1,13 +1,23 @@
 defmodule ArmadilloWeb.SessionController do
   use ArmadilloWeb, :controller
 
-  def create(conn, %{"email" => email, "password" => password}) do
+  def create(conn, %{"email" => email, "password" => password, "device_uuid" => device_uuid}) do
+    user_agent = get_req_header(conn, "user-agent") |> List.first
+    remote_ip = to_string(:inet_parse.ntoa(conn.remote_ip))
+
     case Armadillo.Auth.Session.authenticate(email, password) do
       {:ok, user} ->
-        {:ok, jwt, _full_claims} = user |> Guardian.encode_and_sign(:token)
+
+        response =
+          case  Armadillo.Auth.attempt_sign_in(user, device_uuid, user_agent, remote_ip) do
+            {:ok, jwt} -> %{jwt: jwt}
+            :pending -> %{}
+          end
+
         conn
-          |> put_status(:created)
-          |> render("session.json", jwt: jwt)
+        |> put_status(:created)
+        |> render("session.json", response)
+
       :error ->
         conn
         |> put_status(:unprocessable_entity)

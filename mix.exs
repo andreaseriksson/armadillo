@@ -20,7 +20,7 @@ defmodule Armadillo.Mixfile do
   def application do
     [
       mod: {Armadillo.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :httpoison]
     ]
   end
 
@@ -45,7 +45,9 @@ defmodule Armadillo.Mixfile do
       {:comeonin, "~> 4.0"},
       {:bcrypt_elixir, "~> 0.12.0"},
       {:guardian, "~> 0.14"},
-      {:cipher, ">= 1.3.3"}
+      {:cipher, ">= 1.3.3"},
+      {:httpoison, "~> 0.13"},
+      {:browser, "~> 0.4.1"}
     ]
   end
 

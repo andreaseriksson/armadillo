@@ -82,6 +82,4 @@ defmodule Armadillo.Secrets.Syncer do
       }
     end)
   end
-
-  # Armadillo.Endpoint.broadcast! "flow:#{job.user}", "new:offer", OfferView.render("show.json", %{offer: offer})
 end

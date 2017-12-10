@@ -23,15 +23,6 @@ class Secrets extends React.Component {
     initializeSecrets(socket)
   }
 
-  loadAndSyncSecrets(channel) {
-    const {dispatch, app} = this.props
-
-    channel.push("secrets:index", {
-      secrets: [],
-      events: []
-    })
-  }
-
   newSecret() {
     this.setState({secret: {}})
     setTimeout(() => {
@@ -138,7 +129,9 @@ class Secrets extends React.Component {
 
 Secrets.propTypes = {
   secrets: PropTypes.array.isRequired,
-  app: PropTypes.object.isRequired
+  app: PropTypes.object.isRequired,
+  socket: PropTypes.object.isRequired,
+  initializeSecrets: PropTypes.func.isRequired
 }
 
 const mapDispatchToProps = dispatch => {

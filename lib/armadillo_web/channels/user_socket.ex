@@ -4,7 +4,7 @@ defmodule ArmadilloWeb.UserSocket do
   ## Channels
   # channel "room:*", ArmadilloWeb.RoomChannel
   channel "auth:*", ArmadilloWeb.AuthChannel
-  channel "secrets", ArmadilloWeb.SecretsChannel
+  channel "secrets:*", ArmadilloWeb.SecretsChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

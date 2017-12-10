@@ -18,7 +18,8 @@ defmodule ArmadilloWeb.UserView do
       data: %{
         email: user.email,
         crypto_token: user.crypto_token,
-        json_web_token: jwt
+        json_web_token: jwt,
+        channel_name: user.channel_name
       }
     }
   end

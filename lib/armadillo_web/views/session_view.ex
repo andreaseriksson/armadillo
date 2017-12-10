@@ -5,6 +5,10 @@ defmodule ArmadilloWeb.SessionView do
     %{success: true, token: jwt}
   end
 
+  def render("session.json", %{}) do
+    %{success: false, pending_approval: true, message: "This device is pending approval"}
+  end
+
   def render("error.json", %{}) do
     %{success: false, message: "Wrong sign in credentials"}
   end

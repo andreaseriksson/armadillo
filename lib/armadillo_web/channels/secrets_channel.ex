@@ -3,13 +3,12 @@ defmodule ArmadilloWeb.SecretsChannel do
   use Guardian.Channel
   alias Armadillo.Secrets.Syncer
 
-  def join("secrets", %{claims: _claim, resource: _user}, socket) do
-    # TODO: Make sure there is a single channel per user
-    {:ok, socket}
-  end
-
-  def join("secrets", _, _socket) do
-    {:error, %{reason: "unauthorized"}}
+  def join("secrets:" <> channel_name, %{claims: _claim, resource: _user}, socket) do
+    if channel_name == current_user(socket).channel_name do
+      {:ok, socket}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
   end
 
   def handle_in("sync:start", payload, socket) do

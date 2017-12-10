@@ -7,6 +7,7 @@ defmodule Armadillo.Auth do
   alias Armadillo.Repo
 
   alias Armadillo.Auth.User
+  alias Armadillo.Auth.Device
 
   # @doc """
   # Gets a single user.
@@ -140,5 +141,34 @@ defmodule Armadillo.Auth do
   """
   def change_secret(%Secret{} = secret) do
     Secret.changeset(secret, %{})
+  end
+
+  @doc """
+  Register a device.
+  """
+  def register_device(user, attrs \\ %{}) do
+    %Device{}
+    |> Device.changeset(attrs)
+    |> Ecto.Changeset.put_assoc(:user, user)
+    |> Repo.insert()
+  end
+
+  def device_approved(user, uuid) do
+    case Repo.get_by(Device, uuid: uuid, user_id: user.id, approved: true) do
+      nil ->
+        false
+      _ ->
+        true
+    end
+  end
+
+  def attempt_sign_in(user, device_uuid, user_agent, remote_ip) do
+    if device_approved(user, device_uuid) do
+      {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
+      {:ok, jwt}
+    else
+      Armadillo.Auth.TwoFactorAuthentication.ask_for_approval(user, device_uuid, user_agent, remote_ip)
+      :pending
+    end
   end
 end

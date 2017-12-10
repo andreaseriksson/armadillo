@@ -14,6 +14,7 @@ defmodule Armadillo.Application do
       supervisor(ArmadilloWeb.Endpoint, []),
       # Start your own worker by calling: Armadillo.Worker.start_link(arg1, arg2, arg3)
       # worker(Armadillo.Worker, [arg1, arg2, arg3]),
+      worker(Armadillo.Auth.TwoFactorAuthentication, []),
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

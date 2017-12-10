@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {Link} from 'react-router-dom'
 import {registerRequest} from './actions'
 import {REGISTER_SUCCESS} from '../../constants'
+import {readDeviceUUID} from '../../reducer'
 
 class Register extends React.Component {
   get formData() {
@@ -17,12 +18,16 @@ class Register extends React.Component {
     const {history, dispatch} = this.props
     event.preventDefault()
 
-    registerRequest({user: this.formData}).then(json => {
+    registerRequest({
+      user: this.formData,
+      device_uuid: readDeviceUUID()
+    }).then(json => {
       dispatch({
         type: REGISTER_SUCCESS,
         jsonWebToken: json.data.json_web_token,
         encryptionKey: json.data.crypto_token,
-        email: json.data.email
+        email: json.data.email,
+        channelName: json.data.channel_name
       })
 
       history.push('/')

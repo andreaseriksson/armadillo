@@ -113,7 +113,8 @@ class Secret extends React.Component {
 
 Secret.propTypes = {
   secret: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired
+  close: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => {

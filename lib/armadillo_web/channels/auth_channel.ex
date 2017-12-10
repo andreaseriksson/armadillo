@@ -1,8 +1,11 @@
 defmodule ArmadilloWeb.AuthChannel do
   use ArmadilloWeb, :channel
+  use Guardian.Channel
 
-  def join("auth:refresh", payload, socket) do
-    if authorized?(payload) do
+  alias Armadillo.Auth.TwoFactorAuthentication
+
+  def join("auth:" <> channel_name, %{claims: _claim, resource: _user}, socket) do
+    if channel_name == current_user(socket).channel_name do
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -22,10 +25,19 @@ defmodule ArmadilloWeb.AuthChannel do
     {:noreply, socket}
   end
 
-  # Add authorization logic here as required
-  # check if token exist and verify it
-  # https://hexdocs.pm/guardian/Guardian.html#peek_claims/1
-  defp authorized?(_payload) do
-    true
+  def handle_in("device:approve", %{"device_uuid" => device_uuid}, socket) do
+    current_user(socket)
+    |> TwoFactorAuthentication.approve(device_uuid)
+
+    {:noreply, socket}
   end
+
+  def handle_in("device:deny", %{"device_uuid" => device_uuid}, socket) do
+    current_user(socket)
+    |> TwoFactorAuthentication.deny(device_uuid)
+
+    {:noreply, socket}
+  end
+
+  defp current_user(socket), do: Guardian.Phoenix.Socket.current_resource(socket)
 end

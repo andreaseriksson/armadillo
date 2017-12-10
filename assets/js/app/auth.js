@@ -3,15 +3,25 @@ import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Socket} from 'phoenix'
 import {Redirect} from 'react-router-dom'
-import {REFRESH_TOKEN_SUCCESS, LOGOUT_SUCCESS} from './constants'
+import {connectToAuthChannel} from './actions'
+import ApproveDevice from './approve_device'
 
 class Auth extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      channel: undefined,
+      displayApproveDeviceModal: true,
+      device_uuid: null
+    }
+  }
+
   get online() {
     return navigator.onLine
   }
 
   get loggedIn() {
-    const { app } = this.props
+    const {app} = this.props
 
     if (this.online) {
       return app.jsonWebToken
@@ -21,7 +31,7 @@ class Auth extends React.Component {
   }
 
   componentWillMount() {
-    const { app, dispatch } = this.props
+    const {app, dispatch} = this.props
 
     if (app.jsonWebToken && !app.loggedIn) {
       this.refreshToken()
@@ -29,37 +39,41 @@ class Auth extends React.Component {
   }
 
   render() {
-    // https://reacttraining.com/react-router/web/example/auth-workflow
-    return this.loggedIn ? this.props.children : <Redirect to={{ pathname: '/login' }} />
+    const {displayApproveDeviceModal, channel, device} = this.state
+    if (!this.loggedIn) {
+      return <Redirect to={{ pathname: '/login' }} />
+    }
+    return (
+      <div>
+        {this.props.children}
+        { displayApproveDeviceModal && <ApproveDevice channel={channel} device={device} /> }
+      </div>
+    )
   }
 
   // Refresh the jst from the server through a websocket connection
   refreshToken() {
-    const {socket, app, dispatch, history} = this.props
+    const {socket, history, connectToAuthChannel} = this.props
+    let channel = connectToAuthChannel(socket, history)
+    const that = this
+    this.setState({channel})
+    channel.on('device:request', device => {
+      console.log(device)
 
-    let channel = socket.channel("auth:refresh", {})
-
-    channel.join()
-      .receive('ok', response => { console.log('Joined successfully', response) })
-      .receive('error', response => {
-        console.log('dUnable to join', response)
-        logoutAndRedirect()
+      that.setState({
+        displayApproveDeviceModal: true,
+        device,
+        channel
       })
-
-    channel.push('token:refresh', { token: app.jsonWebToken })
-
-    channel.on('token:new', event => {
-      dispatch({
-        type: REFRESH_TOKEN_SUCCESS,
-        jsonWebToken: event.token
-      })
-    })
-
-    channel.on('token:unauthorized', event => {
-      dispatch({type: LOGOUT_SUCCESS})
-      history.push('/login')
+      // channel.push('device:approve', { device: event.device })
     })
   }
+}
+
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({
+    connectToAuthChannel
+  }, dispatch)
 }
 
 const mapStateToProps = state => {
@@ -68,4 +82,26 @@ const mapStateToProps = state => {
   }
 }
 
-export default connect(mapStateToProps)(Auth)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Auth)
+/*
+{
+  browser: { full_platform_name: "MacOS 10.12.6 Sierra", full_browser_name: "Safari 11.0.1", device_type: "desktop" },
+  device_uuid: "93e9ae65-ce08-431a-bbc5-2974deb436a6",
+  geocode_data: {
+    city: "",
+    country_code: "SE",
+    country_name: "Sweden",
+    ip: "155.4.235.182",
+    latitude: 59.3247,
+    longitude: 18.056,
+    metro_code: 0,
+    region_code: "",
+    region_name: "",
+    time_zone: "Europe/Stockholm",
+    zip_code: ""
+  }
+}
+*/
