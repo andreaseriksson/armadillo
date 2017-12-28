@@ -56,3 +56,15 @@ config :armadillo, Armadillo.Repo,
   database: "armadillo_dev",
   hostname: "localhost",
   pool_size: 10
+
+config :guardian, Guardian,
+  issuer: "Armadillo",
+  ttl: { 3, :days },
+  verify_issuer: true,
+  secret_key: System.get_env("GUARDIAN_SECRET_KEY") || "LMtzATM31U1NB4ML2O2493EyMvjicIjcao0/C5JZgo6fvOGlRsse5HclZn2IYWae",
+  serializer: Armadillo.GuardianSerializer
+
+config :cipher,
+  keyphrase: System.get_env("CIPHER_KEYPHRASE"),
+  ivphrase: System.get_env("CIPHER_IVPHRASE"),
+  magic_token: "magictoken"
