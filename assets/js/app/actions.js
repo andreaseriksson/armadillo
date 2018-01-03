@@ -16,7 +16,14 @@ export const connectToAuthChannel = (socket, history) => {
 
     channel.join()
       .receive('ok', response => { console.log('Joined successfully', response) })
-      .receive('error', response => { console.log('Unable to join', response) })
+      .receive('error', response => {
+        if (response.error == 'invalid_token') {
+          dispatch({type: LOGOUT_SUCCESS})
+          history.push('/login')
+        } else {
+          console.log('Unable to join', response)
+        }
+      })
 
     channel.push('token:refresh', { token: readJsonWebToken() })
 

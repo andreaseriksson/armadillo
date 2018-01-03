@@ -11,7 +11,7 @@ class Auth extends React.Component {
     super(props);
     this.state = {
       channel: undefined,
-      displayApproveDeviceModal: true,
+      displayApproveDeviceModal: false,
       device_uuid: null
     }
   }
