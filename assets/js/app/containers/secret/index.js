@@ -3,42 +3,41 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {Link} from 'react-router-dom';
 import PropTypes from 'prop-types';
-import {initializeSecrets} from './actions';
+import Form from './form';
+import {initializeSecrets} from '../secrets/actions';
 
-class Secrets extends React.Component {
+class Secret extends React.Component {
   componentWillMount() {
     const {socket, initializeSecrets} = this.props;
     initializeSecrets(socket);
   }
 
-  render() {
-    const {secrets} = this.props;
+  get secret() {
+    const {secrets, match} = this.props;
 
+    if (match.url == '/secrets/new') {
+      return {name: null, password: null, uuid: null};
+    } else {
+      return secrets.find(secret => secret.uuid == match.params.uuid);
+    }
+  }
+
+  render() {
+    const secret = this.secret;
     return (
       <div>
         <h1 className="display-3">Secrets</h1>
-
-        <div className="mt-4">
-          {secrets.map((secret, idx) => {
-            return (
-              <div className="card mt-2" key={idx}>
-                <Link className="card-header" to={`/secrets/${secret.uuid}`}>
-                  {secret.name}
-                </Link>
-              </div>
-            );
-          })}
+        <div className="card">
+          <div className="card-body">
+            { secret && <Form secret={secret} /> }
+          </div>
         </div>
-
-        <Link to="/secrets/new" id="smurf" className="btn btn-primary bmd-btn-fab">
-          <i className="material-icons">create_new_folder</i>
-        </Link>
-      </div>
+    </div>
     );
   }
 }
 
-Secrets.propTypes = {
+Secret.propTypes = {
   secrets: PropTypes.array.isRequired,
   socket: PropTypes.object.isRequired,
   initializeSecrets: PropTypes.func.isRequired,
@@ -59,4 +58,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Secrets);
+export default connect(mapStateToProps, mapDispatchToProps)(Secret);

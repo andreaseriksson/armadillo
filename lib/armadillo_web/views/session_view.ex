@@ -1,8 +1,9 @@
 defmodule ArmadilloWeb.SessionView do
   use ArmadilloWeb, :view
 
-  def render("session.json", %{jwt: jwt}) do
-    %{success: true, token: jwt}
+  def render("session.json", %{jwt: jwt, channel_name: channel_name, channel_name: channel_name, crypto_token: crypto_token}) do
+    # TODO: Added channel_name and crypto_token instead of 2FA
+    %{success: true, token: jwt, channel_name: channel_name, crypto_token: crypto_token}
   end
 
   def render("session.json", %{}) do

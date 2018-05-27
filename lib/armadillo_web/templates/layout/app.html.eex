@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,4 +17,113 @@
     <%= render @view_module, @view_template, assigns %>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
   </body>
+</html>-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title></title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
+    <!-- Bootstrap core CSS -->
+    <!--<link rel="stylesheet" href="<%= static_path(@conn, "/css/bootstrap-material-design.min.css") %>">-->
+    <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
+    <style>
+      /* Sticky footer styles
+      -------------------------------------------------- */
+      html {
+        position: relative;
+        min-height: 100%;
+      }
+      body {
+        /* Margin bottom by footer height */
+        margin-bottom: 60px;
+      }
+      .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        /* Set the fixed height of the footer here */
+        height: 60px;
+        line-height: 60px; /* Vertically center the text there */
+        background-color: #333;
+      }
+
+      nav.navbar {
+        background-color: #3f51b5
+      }
+
+      div#app > div > .container {
+        padding: 120px 15px 0;
+        max-width: 576px;
+      }
+
+      .footer > .container {
+        padding-right: 15px;
+        padding-left: 15px;
+      }
+      #smurf {
+        position:fixed;
+        right: 30px;
+        bottom: 90px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <%= render @view_module, @view_template, assigns %>
+    <!--<header>
+      <nav class="navbar navbar-expand-md fixed-top navbar-dark text-center" style="background-color: #3f51b5">
+        <a class="navbar-brand" href="#">Armadillo</a>
+      </nav>
+    </header>
+
+    <main id="app-2" role="main" class="container" style="max-width: 576px">
+      <form>
+        <div class="form-group">
+          <input type="email" class="form-control" placeholder="Enter email">
+          <small class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+      <form>
+        <div class="form-group">
+          <input type="number" class="form-control" placeholder="* * * * * *">
+          <small class="form-text text-muted">6 digit pin code.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Some</th>
+            <th>header</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Some</td>
+            <td>Content</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button id="smurf" type="button" class="btn btn-primary bmd-btn-fab">
+        <i class="material-icons">grade</i>
+      </button>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">
+        </span>
+      </div>
+    </footer>-->
+  </body>
+  <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
 </html>

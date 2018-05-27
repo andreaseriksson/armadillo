@@ -163,12 +163,15 @@ defmodule Armadillo.Auth do
   end
 
   def attempt_sign_in(user, device_uuid, user_agent, remote_ip) do
-    if device_approved(user, device_uuid) do
-      {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
-      {:ok, jwt}
-    else
-      Armadillo.Auth.TwoFactorAuthentication.ask_for_approval(user, device_uuid, user_agent, remote_ip)
-      :pending
-    end
+    {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
+    {:ok, jwt}
+    # TODO: Inactivate 2FA for now
+    # if device_approved(user, device_uuid) do
+    #   {:ok, jwt, _full_claims} = Guardian.encode_and_sign(user, :token)
+    #   {:ok, jwt}
+    # else
+    #   Armadillo.Auth.TwoFactorAuthentication.ask_for_approval(user, device_uuid, user_agent, remote_ip)
+    #   :pending
+    # end
   end
 end

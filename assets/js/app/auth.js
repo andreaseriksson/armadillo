@@ -1,10 +1,10 @@
-import React from 'react'
+import React from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Socket} from 'phoenix'
-import {Redirect} from 'react-router-dom'
-import {connectToAuthChannel} from './actions'
-import ApproveDevice from './approve_device'
+import {Socket} from 'phoenix';
+import {Redirect} from 'react-router-dom';
+import {connectToAuthChannel} from './actions';
+import ApproveDevice from './approve_device';
 
 class Auth extends React.Component {
   constructor(props) {
@@ -12,80 +12,84 @@ class Auth extends React.Component {
     this.state = {
       channel: undefined,
       displayApproveDeviceModal: false,
-      device_uuid: null
-    }
+      device_uuid: null,
+    };
   }
 
   get online() {
-    return navigator.onLine
+    return navigator.onLine;
   }
 
   get loggedIn() {
-    const {app} = this.props
+    const {app} = this.props;
 
     if (this.online) {
-      return app.jsonWebToken
+      return app.jsonWebToken;
     } else {
-      return app.jsonWebToken
+      return app.jsonWebToken;
     }
   }
 
   componentWillMount() {
-    const {app, dispatch} = this.props
+    const {app, dispatch} = this.props;
 
     if (app.jsonWebToken && !app.loggedIn) {
-      this.refreshToken()
+      this.refreshToken();
     }
   }
 
   render() {
-    const {displayApproveDeviceModal, channel, device} = this.state
+    const {displayApproveDeviceModal, channel, device} = this.state;
     if (!this.loggedIn) {
-      return <Redirect to={{ pathname: '/login' }} />
+      return <Redirect to={{pathname: '/login'}} />;
+    } else {
+      return this.props.children;
     }
-    return (
-      <div>
-        {this.props.children}
-        { displayApproveDeviceModal && <ApproveDevice channel={channel} device={device} /> }
-      </div>
-    )
+    // return (
+    //   <div>
+    //     {this.props.children}
+    //     {displayApproveDeviceModal && (
+    //       <ApproveDevice channel={channel} device={device} />
+    //     )}
+    //   </div>
+    // );
   }
 
   // Refresh the jst from the server through a websocket connection
   refreshToken() {
-    const {socket, history, connectToAuthChannel} = this.props
-    let channel = connectToAuthChannel(socket, history)
-    const that = this
-    this.setState({channel})
+    const {socket, history, connectToAuthChannel} = this.props;
+    let channel = connectToAuthChannel(socket, history);
+    const that = this;
+    this.setState({channel});
     channel.on('device:request', device => {
-      console.log(device)
+      console.log(device);
 
       that.setState({
         displayApproveDeviceModal: true,
         device,
-        channel
-      })
+        channel,
+      });
       // channel.push('device:approve', { device: event.device })
-    })
+    });
   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return bindActionCreators({
-    connectToAuthChannel
-  }, dispatch)
-}
+  return bindActionCreators(
+    {
+      connectToAuthChannel,
+    },
+    dispatch,
+  );
+};
 
 const mapStateToProps = state => {
   return {
-    app: state.app
-  }
-}
+    app: state.app,
+  };
+};
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Auth)
+export default connect(mapStateToProps, mapDispatchToProps)(Auth);
 /*
 {
   browser: { full_platform_name: "MacOS 10.12.6 Sierra", full_browser_name: "Safari 11.0.1", device_type: "desktop" },

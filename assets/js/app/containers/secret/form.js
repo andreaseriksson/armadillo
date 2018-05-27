@@ -1,10 +1,10 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
-import {saveSecret, deleteSecret} from './actions';
+import {saveSecret, deleteSecret} from '../secrets/actions';
 import Icon from '../../components/icon';
 
-class Secret extends React.Component {
+class Form extends React.Component {
   constructor(props) {
     super(props);
 
@@ -28,14 +28,15 @@ class Secret extends React.Component {
     const {dispatch, secret, close} = this.props;
     event.preventDefault();
 
-    dispatch(saveSecret(Object.assign({}, secret, this.formData)));
+    // dispatch(saveSecret(Object.assign({}, secret, this.formData)));
 
-    close();
+    // close();
   }
 
   toggle(field) {
     const currentState = this.state[field];
     let newState = {};
+
     newState[field] = !currentState;
     this.setState(newState);
   }
@@ -43,9 +44,9 @@ class Secret extends React.Component {
   delete() {
     const {dispatch, secret, close} = this.props;
 
-    dispatch(deleteSecret(secret));
-
-    close();
+    // dispatch(deleteSecret(secret));
+    //
+    // close();
   }
 
   get formData() {
@@ -151,17 +152,13 @@ class Secret extends React.Component {
   }
 }
 
-Secret.propTypes = {
+Form.propTypes = {
   secret: PropTypes.object.isRequired,
-  close: PropTypes.func.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  // close: PropTypes.func.isRequired,
+  // dispatch: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => {
-  return {};
-};
-
-export default connect(mapStateToProps)(Secret);
+export default Form;
 
 const GenericFormGroup = props => (
   <div className="form-group row">

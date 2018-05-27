@@ -13,6 +13,7 @@ defmodule Armadillo.Auth.User do
     field :password_hash, :string
     field :reset_password_sent_at, :naive_datetime
     field :reset_password_token, :string
+    field :pin_security_check, :string
     has_many :secrets, Armadillo.Auth.Secret
 
     timestamps()
@@ -21,7 +22,7 @@ defmodule Armadillo.Auth.User do
   # @doc false
   def changeset(%User{} = user, attrs) do
     user
-    |> cast(attrs, [:email])
+    |> cast(attrs, [:email, :pin_security_check])
     |> validate_required([:email])
     |> validate_format(:email, ~r/@/)
     |> unique_constraint(:email)

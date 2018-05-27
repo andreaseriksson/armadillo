@@ -42,32 +42,66 @@ defmodule Armadillo.Secrets.Syncer do
   defp update_from_client(secrets_from_database, user, _changed_uuids, secrets_from_client) do
     uuids_from_database = Enum.map(secrets_from_database, fn(s) -> s.uuid end)
     uuids_from_client = get_uuids(secrets_from_client)
-
-    # Create the missing secrets in the database
     uuids_to_create_in_database = uuids_from_client -- uuids_from_database
-
-    created_secrets =
-      Enum.map(secrets_from_client, fn(secret) ->
-        if Enum.member?(uuids_to_create_in_database, secret["uuid"]) do
-          {:ok, secret} = Auth.create_secret(user, secret)
-          secret
-        end
-      end)
-
-    # Update the db with the changed secrets
     uuids_to_update_in_database = uuids_from_client -- uuids_to_create_in_database
 
-    updated_secrets =
-      Enum.map(secrets_from_database, fn(secret) ->
+    new_secrets_in_database =
+      (uuids_from_client -- uuids_from_database)
+      |> Enum.map(fn(uuid) ->
+        secret_attrs = Enum.find(secrets_from_client, fn(s) -> s["uuid"] == uuid end)
+        {:ok, secret} = Auth.create_secret(user, secret_attrs)
+        secret
+      end)
+
+    exsisting_and_updated_secrets =
+      secrets_from_database
+      |> Enum.map(fn(secret) ->
         if Enum.member?(uuids_to_update_in_database, secret.uuid) do
           attrs = Enum.find(secrets_from_client, fn(s) -> s["uuid"] == secret.uuid end)
           {:ok, secret} = Auth.update_secret(secret, attrs)
           secret
+        else
+          # Return unupdated secret
+          secret
         end
       end)
 
-    (updated_secrets ++ created_secrets)
-    |> Enum.filter(fn(s) -> s != nil end)
+    exsisting_and_updated_secrets ++ new_secrets_in_database
+
+    #########
+    # uuids_from_database = Enum.map(secrets_from_database, fn(s) -> s.uuid end)
+    # uuids_from_client = get_uuids(secrets_from_client)
+    #
+    # # common_uuids
+    #
+    # # Create the missing secrets in the database
+    # uuids_to_create_in_database = uuids_from_client -- uuids_from_database
+    #
+    # created_secrets =
+    #   Enum.map(secrets_from_client, fn(secret) ->
+    #     if Enum.member?(uuids_to_create_in_database, secret["uuid"]) do
+    #       {:ok, secret} = Auth.create_secret(user, secret)
+    #       secret
+    #     end
+    #   end)
+    #
+    # # Update the db with the changed secrets
+    # uuids_to_update_in_database = uuids_from_client -- uuids_to_create_in_database
+    #
+    # updated_secrets =
+    #   Enum.map(secrets_from_database, fn(secret) ->
+    #     if Enum.member?(uuids_to_update_in_database, secret.uuid) do
+    #       attrs = Enum.find(secrets_from_client, fn(s) -> s["uuid"] == secret.uuid end)
+    #       {:ok, secret} = Auth.update_secret(secret, attrs)
+    #       secret
+    #     # else
+    #     #   # Return unupdated secret
+    #     #   secret
+    #     end
+    #   end)
+    #
+    # (updated_secrets ++ created_secrets)
+    # |> Enum.filter(fn(s) -> s != nil end)
   end
 
   defp to_attributes(secrets) do
