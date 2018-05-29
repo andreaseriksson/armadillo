@@ -2,26 +2,27 @@ import React from 'react';
 
 class Form extends React.Component {
   handleChange() {
-    const {needToSetPin} = this.props;
-    if (needToSetPin) return;
+    const {needToSetNewPin, hidePin} = this.props;
+    if (needToSetNewPin) return;
 
     const pin = this.refs.pin.value;
-    this.props.validatePin(pin);
+    this.props.validatePin(pin, hidePin);
   }
 
   handleFormSubmit(event) {
     event.preventDefault();
-    const {needToSetPin, encryptAndSavePin, encryptionKey} = this.props;
+    const {needToSetNewPin, encryptAndSavePin, encryptionKey} = this.props;
 
-    if (!needToSetPin) return;
+    if (!needToSetNewPin) return;
 
     const pin = this.refs.pin.value;
     encryptAndSavePin(encryptionKey, pin);
+    this.refs.pin.value = '';
   }
 
   get title() {
-    const {needToSetPin} = this.props;
-    if (needToSetPin) {
+    const {needToSetNewPin} = this.props;
+    if (needToSetNewPin) {
       return 'Enter a new PIN';
     } else {
       return 'Enter your PIN';
@@ -29,8 +30,8 @@ class Form extends React.Component {
   }
 
   get helpText() {
-    const {needToSetPin} = this.props;
-    if (needToSetPin) {
+    const {needToSetNewPin} = this.props;
+    if (needToSetNewPin) {
       return 'Remember the PIN number. Otherwise you cant unlock your secrets';
     } else {
       return 'The PIN number you set the first time';
@@ -38,7 +39,7 @@ class Form extends React.Component {
   }
 
   render() {
-    const {needToSetPin} = this.props;
+    const {needToSetNewPin} = this.props;
 
     return (
       <div className="card">
@@ -63,7 +64,7 @@ class Form extends React.Component {
               />
               <small className="form-text text-muted">{this.helpText}</small>
             </div>
-            {needToSetPin && (
+            {needToSetNewPin && (
               <button type="submit" className="btn btn-block btn-primary">
                 Submit
               </button>

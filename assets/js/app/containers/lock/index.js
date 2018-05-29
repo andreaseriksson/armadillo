@@ -1,42 +1,36 @@
 import React from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import Cryptr from 'cryptr';
-import {sha256} from 'js-sha256';
 import Form from './form';
-import {encryptAndSavePin} from './actions';
+import {encryptAndSavePin, correctPin, hidePin} from './actions';
 
 class Lock extends React.Component {
-  validatePin(pin) {
-    console.log(pin)
+  validatePin(pin, hidePin) {
+    const {pinSecurityCheck, encryptionKey} = this.props.app;
+
+    if (correctPin(encryptionKey, pin, pinSecurityCheck)) {
+      hidePin();
+    }
   }
 
-  get needToSetPin() {
+  get needToSetNewPin() {
     const {pinSecurityCheck} = this.props.app;
     return !pinSecurityCheck;
   }
 
   render() {
-    // cryptr.decrypt('SMURF')
-    // const encryptedString = cryptr.encrypt('bacon');
-    // const decryptedString = cryptr.decrypt(encryptedString);
-    // console.log(encryptedString);
-    // console.log(decryptedString);
-    // console.log(sha256('The quick brown fox jumps over the lazy dog'))
+    const {needToEnterPin, encryptionKey} = this.props.app;
 
-    // PIN + encryptionKey = combinedEncryptionKey
-
-    const {pin} = this.props.app; // TODO: Fix
-
-    if (pin) {
+    if (!needToEnterPin) {
       return this.props.children;
     } else {
       return (
         <Form
-          needToSetPin={this.needToSetPin}
-          validatePin={this.validatePin}
+          needToSetPin={this.needToSetNewPin}
+          validatePin={this.validatePin.bind(this)}
           encryptAndSavePin={this.props.encryptAndSavePin}
-          encryptionKey={this.encryptionKey}
+          hidePin={this.props.hidePin}
+          encryptionKey={this.props.app.encryptionKey}
         />
       );
     }
@@ -45,7 +39,7 @@ class Lock extends React.Component {
 
 const mapDispatchToProps = dispatch => {
   return bindActionCreators(
-    {encryptAndSavePin}, dispatch,
+    {encryptAndSavePin, hidePin}, dispatch,
   );
 };
 

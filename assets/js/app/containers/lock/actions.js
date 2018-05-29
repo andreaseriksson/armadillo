@@ -14,28 +14,51 @@ import Cryptr from 'cryptr';
 import {sha256} from 'js-sha256';
 import {readJsonWebToken} from '../../reducer';
 
-// const LOCALSTORAGE_PIN_KEY = 'LOCALSTORAGE_PIN_KEY';
-// const LOCALSTORAGE_ENCRYPTED_PIN = 'LOCALSTORAGE_ENCRYPTED_PIN';
 const SECURITY_CHECK_PHRASE = 'NINJA';
 
-
-// const shouldSetNewPin = () => {
-//   return !readPin() === true;
-// }
+const encryptPin = pin => {
+  return sha256(`${pin}`);
+};
 
 export const encryptAndSavePin = (encryptionKey, pin) => {
   const pinSecurityCheck = createSecurityCheck(encryptionKey, pin);
 
   return dispatch => {
-    updateProfileRequest({user: { pin_security_check: pinSecurityCheck }}).then(() => {
+    updateProfileRequest({
+      user: {pin_security_check: pinSecurityCheck},
+    }).then(() => {
       dispatch({
         type: 'SET_PIN_SECURITY_CHECK',
         pinSecurityCheck: pinSecurityCheck,
-        encryptedPin: sha256(pin)
-      })
-    })
-  }
-}
+        encryptedPin: sha256(pin),
+      });
+    });
+  };
+};
+
+export const hidePin = () => {
+  return dispatch => {
+    dispatch({
+      type: 'HIDE_PIN',
+    });
+  };
+};
+
+const createSecurityCheck = (encryptionKey, pin) => {
+  const encryptedPin = encryptPin(pin);
+  const key = combinedEncryptionKey(encryptionKey, encryptedPin);
+  const cryptr = new Cryptr(key);
+
+  return cryptr.encrypt(SECURITY_CHECK_PHRASE);
+};
+
+export const correctPin = (encryptionKey, pin, pinSecurityCheck) => {
+  return createSecurityCheck(encryptionKey, pin) == pinSecurityCheck;
+};
+
+const combinedEncryptionKey = (encryptionKey, encryptedPin) => {
+  return encryptionKey + encryptedPin.substring(0, 8);
+};
 
 const updateProfileRequest = formData => {
   return fetch('/api/profile', {
@@ -46,42 +69,6 @@ const updateProfileRequest = formData => {
       Authorization: readJsonWebToken(),
     },
   }).then(response => {
-    return response.json()
-  })
-}
-
-const createSecurityCheck = (encryptionKey, pin) => {
-  const encryptedPin = sha256(pin);
-  const key = combinedEncryptionKey(encryptionKey, encryptedPin)
-  const cryptr = new Cryptr(key);
-
-  return cryptr.encrypt(SECURITY_CHECK_PHRASE);
-}
-
-const correctPin = (encryptionKey) => {
-  const key = combinedEncryptionKey(encryptionKey)
-  const cryptr = new Cryptr(key);
-
-  try {
-    return cryptr.decrypt(encryptedString) === 'SMURF';
-  } catch(_) {
-    return false;
-  }
-}
-
-const combinedEncryptionKey = (encryptionKey, encryptedPin) => {
-  return encryptionKey + encryptedPin.substring(0, 8);
-}
-
-//
-// export const readPin = () => {
-//   return localStorage.getItem(LOCALSTORAGE_ENCRYPTED_PIN);
-// };
-//
-// const savePin = pin => {
-//   localStorage.setItem(LOCALSTORAGE_ENCRYPTED_PIN, pin);
-// };
-//
-// const clearPin = () => {
-//   localStorage.removeItem(LOCALSTORAGE_ENCRYPTED_PIN);
-// };
+    return response.json();
+  });
+};
