@@ -28,7 +28,7 @@ const defaultState = {
   channelName: SET_CHANNEL_NAME,
   loggedIn: false,
   email: null,
-  needToEnterPin: true,
+  encryptedPin: null,
   pinSecurityCheck: SET_PIN_SECURITY_CHECK,
 };
 
@@ -73,11 +73,11 @@ const app = (state = defaultState, action) => {
       savePinSecurityCheck(action.pinSecurityCheck);
       return Object.assign({}, state, {
         pinSecurityCheck: action.pinSecurityCheck,
-        needToEnterPin: false,
+        encryptedPin: action.encryptedPin,
       });
 
     case 'HIDE_PIN':
-      return Object.assign({}, state, {needToEnterPin: false});
+      return Object.assign({}, state, {encryptedPin: action.encryptedPin});
 
     default:
       return state;

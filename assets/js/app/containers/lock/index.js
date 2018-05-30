@@ -9,7 +9,7 @@ class Lock extends React.Component {
     const {pinSecurityCheck, encryptionKey} = this.props.app;
 
     if (correctPin(encryptionKey, pin, pinSecurityCheck)) {
-      hidePin();
+      hidePin(pin);
     }
   }
 
@@ -18,10 +18,15 @@ class Lock extends React.Component {
     return !pinSecurityCheck;
   }
 
-  render() {
-    const {needToEnterPin, encryptionKey} = this.props.app;
+  get needToEnterPin() {
+    const {encryptedPin} = this.props.app;
+    return !encryptedPin;
+  }
 
-    if (!needToEnterPin) {
+  render() {
+    const {encryptionKey} = this.props.app;
+
+    if (!this.needToEnterPin) {
       return this.props.children;
     } else {
       return (
@@ -30,7 +35,7 @@ class Lock extends React.Component {
           validatePin={this.validatePin.bind(this)}
           encryptAndSavePin={this.props.encryptAndSavePin}
           hidePin={this.props.hidePin}
-          encryptionKey={this.props.app.encryptionKey}
+          encryptionKey={encryptionKey}
         />
       );
     }

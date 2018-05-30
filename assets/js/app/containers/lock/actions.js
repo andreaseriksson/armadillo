@@ -13,8 +13,7 @@
 import Cryptr from 'cryptr';
 import {sha256} from 'js-sha256';
 import {readJsonWebToken} from '../../reducer';
-
-const SECURITY_CHECK_PHRASE = 'NINJA';
+import {SET_PIN_SECURITY_CHECK, HIDE_PIN, SECURITY_CHECK_PHRASE} from '../../constants';
 
 const encryptPin = pin => {
   return sha256(`${pin}`);
@@ -28,7 +27,7 @@ export const encryptAndSavePin = (encryptionKey, pin) => {
       user: {pin_security_check: pinSecurityCheck},
     }).then(() => {
       dispatch({
-        type: 'SET_PIN_SECURITY_CHECK',
+        type: SET_PIN_SECURITY_CHECK,
         pinSecurityCheck: pinSecurityCheck,
         encryptedPin: sha256(pin),
       });
@@ -36,10 +35,11 @@ export const encryptAndSavePin = (encryptionKey, pin) => {
   };
 };
 
-export const hidePin = () => {
+export const hidePin = (pin) => {
   return dispatch => {
     dispatch({
-      type: 'HIDE_PIN',
+      type: HIDE_PIN,
+      encryptedPin: sha256(pin),
     });
   };
 };

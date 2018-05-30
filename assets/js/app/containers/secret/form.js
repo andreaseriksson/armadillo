@@ -1,8 +1,11 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
+import Cryptr from 'cryptr';
+import {sha256} from 'js-sha256';
 import {saveSecret, deleteSecret} from '../secrets/actions';
 import Icon from '../../components/icon';
+import {combinedEncryptionKey} from './actions';
 
 class Form extends React.Component {
   constructor(props) {
@@ -24,13 +27,31 @@ class Form extends React.Component {
     }
   }
 
+  encryptValue(stringToEncrypt) {
+    const {encryptionKey, encryptedPin} = this.props.app;
+    const key = combinedEncryptionKey(encryptionKey, encryptedPin);
+    const cryptr = new Cryptr(key);
+    return cryptr.encrypt(stringToEncrypt);
+  }
+
+
+  decryptValue(stringToDecrypt) {
+    const {encryptionKey, encryptedPin} = this.props.app;
+    const key = combinedEncryptionKey(encryptionKey, encryptedPin);
+    const cryptr = new Cryptr(key);
+
+    try {
+      return cryptr.decrypt(stringToDecrypt);
+    } catch (_error) {
+      return undefined;
+    }
+  }
+
   handleSubmit(event) {
-    const {dispatch, secret, close} = this.props;
     event.preventDefault();
-
-    // dispatch(saveSecret(Object.assign({}, secret, this.formData)));
-
-    // close();
+    const {dispatch, secret, history} = this.props;
+    dispatch(saveSecret(Object.assign({}, secret, this.formData)));
+    history.push('/');
   }
 
   toggle(field) {
@@ -42,21 +63,20 @@ class Form extends React.Component {
   }
 
   delete() {
-    const {dispatch, secret, close} = this.props;
-
-    // dispatch(deleteSecret(secret));
-    //
-    // close();
+    const {dispatch, secret, history} = this.props;
+    dispatch(deleteSecret(secret));
+    history.push('/');
   }
 
   get formData() {
     const {name, url, username, password, description} = this.refs;
+    const {encryptedPin, pinSecurityCheck} = this.props.app;
 
     return {
       name: name.value,
       url: url.value,
-      username: username.value,
-      password: password.value,
+      username: this.encryptValue(username.value),
+      password: this.encryptValue(password.value),
       description: description.value,
     };
   }
@@ -109,7 +129,7 @@ class Form extends React.Component {
           <input
             ref="username"
             placeholder="Username.."
-            defaultValue={username}
+            defaultValue={this.decryptValue(username)}
             {...usernameProps}
           />
         </AdvancedFormGroup>
@@ -120,7 +140,7 @@ class Form extends React.Component {
           <input
             ref="password"
             placeholder="Password.."
-            defaultValue={password}
+            defaultValue={this.decryptValue(password)}
             {...passwordProps}
           />
         </AdvancedFormGroup>
@@ -140,7 +160,7 @@ class Form extends React.Component {
               type="button"
               className="btn btn-danger pull-left"
               onClick={() => this.delete()}>
-              <Icon name="trash" />
+              <Icon name="trash" /> Delete
             </button>
           )}
           <button type="submit" className="btn btn-primary">
@@ -158,7 +178,13 @@ Form.propTypes = {
   // dispatch: PropTypes.func.isRequired,
 };
 
-export default Form;
+const mapStateToProps = state => {
+  return {
+    app: state.app,
+  };
+};
+
+export default connect(mapStateToProps)(Form);
 
 const GenericFormGroup = props => (
   <div className="form-group row">

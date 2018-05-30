@@ -24,12 +24,14 @@ class Secret extends React.Component {
 
   render() {
     const secret = this.secret;
+    const history = this.props.history;
+
     return (
       <div>
         <h1 className="display-3">Secrets</h1>
         <div className="card">
           <div className="card-body">
-            { secret && <Form secret={secret} /> }
+            { secret && <Form secret={secret} history={history} /> }
           </div>
         </div>
     </div>
