@@ -47,7 +47,8 @@ defmodule Armadillo.Mixfile do
       {:guardian, "~> 0.14"},
       {:cipher, ">= 1.3.3"},
       {:httpoison, "~> 0.13"},
-      {:browser, "~> 0.4.1"}
+      {:browser, "~> 0.4.1"},
+      {:ex_machina, "~> 2.2"}
     ]
   end
 

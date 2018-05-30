@@ -86,7 +86,7 @@ defmodule Armadillo.AuthTest do
       assert Auth.get_secret!(user, secret.id).id == secret.id
     end
 
-    test "create_secret/1 with valid data creates a secret" do
+    test "create_secret/1 with valid data creates a secret" do 
       user = user_fixture()
       assert {:ok, %Secret{} = secret} = Auth.create_secret(user, @valid_attrs)
       assert secret.description == "some description"

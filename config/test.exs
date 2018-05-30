@@ -17,3 +17,8 @@ config :armadillo, Armadillo.Repo,
   database: "armadillo_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :cipher,
+  keyphrase: System.get_env("CIPHER_KEYPHRASE"),
+  ivphrase: System.get_env("CIPHER_IVPHRASE"),
+  magic_token: "magictoken"
